@@ -2,32 +2,40 @@ name: Update Local Now IPTV
 
 on:
   schedule:
-    - cron: "0 2 * * *"
-  workflow_dispatch:
+    - cron: '0 0 * * *'
 
 jobs:
-  update_localnow:
+  update_ip:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set Up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.9"
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
 
-      - name: Install Dependencies
-        run: pip install requests beautifulsoup4 lxml
+    - name: Install dependencies
+      run: |
+        pip install requests beautifulsoup4 lxml
 
-      - name: Run Scraper
-        run: python localnow.py
+    - name: Run script
+      run: |
+        python localnow.py
 
-      - name: Commit and Push Changes
-        run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          git add localnow.m3u localnow.xml
-          git commit -m "Updated Local Now M3U & EPG" || exit 0
-          git push
+    - name: List files for debugging
+      run: |
+        echo "Listing all files:"
+        ls -R
+
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "GitHub Actions"
+        git config --global user.email "actions@github.com"
+        git add localnow.m3u localnow.xml
+        git commit -m "Updated Local Now M3U & EPG" || exit 0
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
