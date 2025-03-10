@@ -26,7 +26,25 @@ jobs:
         run: |
           git config --local --name-only --get-regexp http.https://github.com/.extraheader && git config --local --unset-all http.https://github.com/.extraheader
           git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http.https://github.com/.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-
-      - name: Your remaining steps
+      
+      - name: Generate XML file
         run: |
-          # Add your other steps here
+          # Command to generate the .xml file
+          python generate_xml.py
+
+      - name: Generate M3U file
+        run: |
+          # Command to generate the .m3u file
+          python generate_m3u.py
+
+      - name: Upload XML file to artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: xml-file
+          path: path/to/generated/file.xml
+
+      - name: Upload M3U file to artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: m3u-file
+          path: path/to/generated/file.m3u
