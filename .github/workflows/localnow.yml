@@ -11,7 +11,16 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+
+      - name: Configure git for safe directory
+        run: |
+          git config --global --add safe.directory /home/runner/work/localnow/localnow
+
+      - name: Clear core.sshCommand configurations
+        run: |
+          git config --local --name-only --get-regexp core.sshCommand && git config --local --unset-all core.sshCommand || true
+          git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core.s ▋eckout@v2
 
       - name: Configure git for safe directory
         run: |
