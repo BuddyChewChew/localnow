@@ -1,67 +1,32 @@
 name: Update Local Now IPTV
 
 on:
-  schedule:
-    - cron: '0 0 * * *'
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  update_ip:
+  update-iptv:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Initialize submodules
-      run: |
-        git submodule sync --recursive
-        git submodule update --init --recursive
-        git submodule foreach --recursive git submodule sync --recursive
-        git submodule foreach --recursive git submodule update --init --recursive
+      - name: Configure git for safe directory
+        run: |
+          git config --global --add safe.directory /home/runner/work/localnow/localnow
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.9'
+      - name: Clear core.sshCommand configurations
+        run: |
+          git config --local --name-only --get-regexp core.sshCommand && git config --local --unset-all core.sshCommand || true
+          git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
 
-    - name: Install dependencies
-      run: |
-        pip install requests beautifulsoup4 lxml
+      - name: Unset GitHub extra headers
+        run: |
+          git config --local --name-only --get-regexp http.https://github.com/.extraheader && git config --local --unset-all http.https://github.com/.extraheader
+          git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http.https://github.com/.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
 
-    - name: Run script
-      run: python localnow.py
-
-    - name: List files for debugging
-      run: |
-        echo "Listing all files:"
-        ls -R
-
-    - name: Verify files existence
-      run: |
-        if [ ! -f localnow.m3u ]; then echo "localnow.m3u not found"; exit 1; fi
-        if [ ! -f localnow.xml ]; then echo "localnow.xml not found"; exit 1; fi
-
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "GitHub Actions"
-        git config --global user.email "actions@github.com"
-        git add localnow.m3u localnow.xml
-        git commit -m "Updated Local Now M3U & EPG" || true
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Debug Git status
-      run: |
-        git status
-        git log -1
-
-    - name: Print environment variables
-      run: printenv
-
-    - name: Check Python version
-      run: python --version
-
-    - name: Check installed packages
-      run: pip list
+      - name: Your remaining steps
+        run: |
+          # Add your other steps here
