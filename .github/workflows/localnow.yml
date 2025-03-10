@@ -30,6 +30,11 @@ jobs:
         echo "Listing all files:"
         ls -R
 
+    - name: Verify files existence
+      run: |
+        if [ ! -f localnow.m3u ]; then echo "localnow.m3u not found"; exit 1; fi
+        if [ ! -f localnow.xml ]; then echo "localnow.xml not found"; exit 1; fi
+
     - name: Commit and push changes
       run: |
         git config --global user.name "GitHub Actions"
@@ -39,3 +44,8 @@ jobs:
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Debug Git status
+      run: |
+        git status
+        git log -1
