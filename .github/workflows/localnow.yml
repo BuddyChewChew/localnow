@@ -13,6 +13,11 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
+    - name: Initialize submodules
+      run: |
+        git submodule update --init --recursive
+        git submodule foreach --recursive git submodule update --init
+
     - name: Set up Python
       uses: actions/setup-python@v3
       with:
