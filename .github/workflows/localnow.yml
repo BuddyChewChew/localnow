@@ -49,3 +49,12 @@ jobs:
       run: |
         git status
         git log -1
+
+    - name: Print environment variables
+      run: printenv
+
+    - name: Check Python version
+      run: python --version
+
+    - name: Check installed packages
+      run: pip list
