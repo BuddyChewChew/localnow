@@ -30,8 +30,7 @@ jobs:
         pip install requests beautifulsoup4 lxml
 
     - name: Run script
-      run: |
-        python localnow.py
+      run: python localnow.py
 
     - name: List files for debugging
       run: |
